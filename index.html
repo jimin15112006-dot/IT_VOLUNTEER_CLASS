@@ -1,0 +1,1645 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kuromi To-do · Hoàng Thị Ngọc Ánh</title>
+  <style>
+    :root {
+      --pink-50: #fff5f8;
+      --pink-100: #ffe4ec;
+      --pink-200: #ffd0dd;
+      --pink-300: #ffb3c6;
+      --pink-400: #ff8fab;
+      --pink-500: #f76a8c;
+      --rose: #e85a7a;
+      --kuromi: #6b4c7a;
+      --kuromi-deep: #4a3558;
+      --lavender: #d4b8e8;
+      --text: #5c3a45;
+      --muted: #9a6b78;
+      --shadow: 0 14px 42px rgba(180, 120, 200, 0.22);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      font-family: "Times New Roman", Times, serif;
+      color: var(--text);
+      background:
+        radial-gradient(ellipse 80% 50% at 15% 10%, rgba(255, 182, 214, 0.85) 0%, transparent 55%),
+        radial-gradient(ellipse 70% 45% at 90% 8%, rgba(210, 170, 255, 0.75) 0%, transparent 50%),
+        radial-gradient(ellipse 60% 40% at 70% 90%, rgba(255, 160, 200, 0.55) 0%, transparent 50%),
+        radial-gradient(ellipse 50% 35% at 20% 80%, rgba(186, 150, 255, 0.45) 0%, transparent 50%),
+        linear-gradient(160deg, #fff0f8 0%, #ffe4f2 30%, #f3e6ff 65%, #ffe8f5 100%);
+      background-attachment: fixed;
+      padding: 20px 14px 70px;
+      overflow-x: hidden;
+    }
+
+    /* Sparkles */
+    .sparkles {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+    }
+    .sparkles i {
+      position: absolute;
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 0 8px 2px rgba(255, 200, 230, 0.9), 0 0 16px 4px rgba(200, 160, 255, 0.5);
+      animation: twinkle var(--d, 4s) ease-in-out infinite;
+      opacity: 0;
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: 0; transform: scale(0.4); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+
+    .deco {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+    }
+    .deco span {
+      position: absolute; font-size: 1.25rem; opacity: 0.28;
+      animation: float 7s ease-in-out infinite;
+      filter: drop-shadow(0 0 6px rgba(255, 180, 220, 0.6));
+    }
+    .deco span:nth-child(1) { top: 7%; left: 5%; }
+    .deco span:nth-child(2) { top: 16%; right: 8%; animation-delay: 1s; }
+    .deco span:nth-child(3) { bottom: 20%; left: 10%; animation-delay: 2s; }
+    .deco span:nth-child(4) { bottom: 10%; right: 7%; animation-delay: .5s; }
+    .deco span:nth-child(5) { top: 45%; left: 3%; animation-delay: 1.5s; }
+    .deco span:nth-child(6) { top: 55%; right: 4%; animation-delay: 2.4s; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0); }
+      50% { transform: translateY(-12px) rotate(8deg); }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes bounceIn {
+      0% { transform: scale(.6); opacity: 0; }
+      60% { transform: scale(1.08); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 4px rgba(247,106,140,.15); }
+      50% { box-shadow: 0 0 0 8px rgba(247,106,140,.06); }
+    }
+    @keyframes shimmer {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 200% 50%; }
+    }
+
+    .app {
+      position: relative; z-index: 1;
+      max-width: 660px; margin: 0 auto;
+    }
+
+    /* Lang switcher */
+    .lang-bar {
+      display: flex; justify-content: flex-end; gap: 8px;
+      margin-bottom: 12px; flex-wrap: wrap;
+    }
+    .lang-bar button {
+      font-family: inherit; cursor: pointer;
+      position: relative; overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      background: rgba(255, 255, 255, 0.55);
+      color: var(--muted); padding: 8px 16px;
+      border-radius: 14px; font-size: .88rem;
+      backdrop-filter: blur(12px);
+      box-shadow:
+        0 2px 8px rgba(180, 120, 200, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+      transition: transform .2s ease, box-shadow .25s ease, color .2s, background .25s, border-color .2s;
+    }
+    .lang-bar button::after {
+      content: ""; position: absolute; inset: 0;
+      background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,.55) 50%, transparent 70%);
+      transform: translateX(-120%);
+      transition: transform .5s ease;
+    }
+    .lang-bar button:hover {
+      border-color: rgba(200, 155, 232, 0.6);
+      color: var(--rose);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(200, 140, 220, 0.22);
+    }
+    .lang-bar button:hover::after { transform: translateX(120%); }
+    .lang-bar button.active {
+      background: linear-gradient(135deg, #ff8fab 0%, #e091d0 50%, #c89be8 100%);
+      color: white; border-color: transparent;
+      box-shadow:
+        0 6px 18px rgba(200, 140, 220, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    }
+
+    /* Header */
+    header {
+      text-align: center; margin-bottom: 16px; animation: fadeUp .55s ease;
+    }
+    .hero {
+      display: flex; align-items: center; justify-content: center;
+      gap: 14px; flex-wrap: wrap; margin-bottom: 8px;
+    }
+    .kuromi-wrap {
+      width: 96px; height: 96px; flex-shrink: 0;
+      animation: bounceIn .7s ease;
+      filter: drop-shadow(0 8px 18px rgba(160, 100, 200, .3));
+    }
+    .kuromi-wrap svg { width: 100%; height: 100%; }
+    h1 {
+      font-size: clamp(1.55rem, 4vw, 2.1rem);
+      font-weight: 400; letter-spacing: .02em;
+      background: linear-gradient(90deg, #e85a7a, #b57ad8, #e85a7a);
+      background-size: 200% auto;
+      -webkit-background-clip: text; background-clip: text;
+      color: transparent;
+      animation: shimmer 6s linear infinite;
+    }
+    .greeting { margin-top: 4px; font-size: 1.05rem; color: var(--muted); }
+    .greeting strong { color: var(--rose); font-weight: 700; }
+    .date-line { margin-top: 2px; font-size: .95rem; color: #b07a8a; }
+    .quote {
+      margin-top: 10px; font-style: italic; color: var(--kuromi);
+      font-size: .95rem; background: rgba(255,255,255,.6);
+      display: inline-block; padding: 6px 14px; border-radius: 999px;
+      border: 1px dashed #d4b8e8;
+      box-shadow: 0 0 20px rgba(200, 155, 232, 0.25);
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap;
+      justify-content: center;
+      padding: 6px;
+      background: rgba(255, 255, 255, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.65);
+      border-radius: 20px;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 8px 28px rgba(180, 120, 200, 0.12);
+    }
+    .tabs button {
+      font-family: inherit; cursor: pointer;
+      position: relative; overflow: hidden;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      padding: 10px 16px;
+      border-radius: 14px;
+      font-size: .92rem;
+      letter-spacing: 0.01em;
+      transition: transform .2s ease, color .2s, background .25s, box-shadow .25s;
+    }
+    .tabs button:hover {
+      color: var(--rose);
+      background: rgba(255, 255, 255, 0.55);
+      transform: translateY(-1px);
+    }
+    .tabs button.active {
+      background: linear-gradient(135deg, #ff8fab 0%, #e091d0 55%, #c89be8 100%);
+      color: white;
+      box-shadow:
+        0 8px 22px rgba(200, 140, 220, 0.38),
+        inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    }
+    .tabs button.active:hover { transform: translateY(-1px) scale(1.02); }
+
+    .panel { display: none; animation: fadeUp .4s ease; }
+    .panel.active { display: block; }
+
+    .card {
+      background: rgba(255, 250, 253, 0.88);
+      border: 1px solid rgba(220, 180, 240, 0.55);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow), inset 0 0 40px rgba(255, 230, 245, 0.4);
+      padding: 18px; margin-bottom: 14px;
+      backdrop-filter: blur(10px);
+    }
+    .card h2 {
+      font-size: 1.12rem; color: var(--rose); font-weight: 400;
+      margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+    }
+
+    /* About */
+    .about-hero {
+      display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap;
+    }
+    .about-avatar {
+      width: 88px; height: 88px; border-radius: 50%;
+      background: linear-gradient(145deg, #ff8fab, #c89be8);
+      display: grid; place-items: center;
+      color: white; font-size: 1.5rem; font-weight: 700;
+      border: 3px solid white;
+      box-shadow: 0 8px 24px rgba(200, 140, 220, 0.4), 0 0 30px rgba(255, 160, 200, 0.35);
+      flex-shrink: 0;
+    }
+    .about-name {
+      font-size: 1.35rem; color: var(--kuromi-deep); margin-bottom: 4px;
+    }
+    .about-role {
+      color: var(--rose); font-size: .98rem; margin-bottom: 8px;
+    }
+    .about-bio {
+      color: var(--text); line-height: 1.65; font-size: 1rem;
+    }
+    .about-tags {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px;
+    }
+    .tag {
+      padding: 6px 12px; border-radius: 999px; font-size: .85rem;
+      background: linear-gradient(135deg, #ffe4ec, #f0e4ff);
+      color: var(--kuromi); border: 1px solid rgba(200, 155, 232, 0.4);
+    }
+    .dream-box {
+      margin-top: 14px; padding: 14px 16px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(255, 230, 242, 0.9), rgba(235, 220, 255, 0.9));
+      border: 1.5px dashed #d4b8e8;
+      line-height: 1.55;
+    }
+    .dream-box strong { color: var(--rose); }
+    .info-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px;
+    }
+    @media (max-width: 480px) { .info-grid { grid-template-columns: 1fr; } }
+    .info-item {
+      background: rgba(255,255,255,.7);
+      border: 1px solid var(--pink-200);
+      border-radius: 14px; padding: 12px;
+    }
+    .info-item .label {
+      font-size: .8rem; color: var(--muted); margin-bottom: 4px;
+    }
+    .info-item .value { font-size: .95rem; color: var(--kuromi-deep); line-height: 1.4; }
+
+    /* Progress */
+    .progress-grid {
+      display: grid; grid-template-columns: 120px 1fr; gap: 16px; align-items: center;
+    }
+    @media (max-width: 480px) {
+      .progress-grid { grid-template-columns: 1fr; justify-items: center; text-align: center; }
+    }
+    .ring { width: 110px; height: 110px; position: relative; }
+    .ring svg { transform: rotate(-90deg); }
+    .ring-label {
+      position: absolute; inset: 0; display: grid; place-items: center;
+      font-size: 1.35rem; color: var(--rose); font-weight: 700;
+    }
+    .ring-label small {
+      display: block; font-size: .72rem; font-weight: 400; color: var(--muted);
+    }
+    .bar-block { margin-bottom: 10px; }
+    .bar-top {
+      display: flex; justify-content: space-between; font-size: .9rem;
+      color: var(--muted); margin-bottom: 5px;
+    }
+    .bar {
+      height: 12px; background: var(--pink-100); border-radius: 999px; overflow: hidden;
+    }
+    .bar > i {
+      display: block; height: 100%; border-radius: 999px;
+      background: linear-gradient(90deg, var(--pink-400), #c89be8);
+      width: 0; transition: width .5s ease;
+    }
+    .bar.important > i { background: linear-gradient(90deg, #f76a8c, #b57ad8); }
+    .stats-mini { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+    .stat {
+      flex: 1; min-width: 72px; text-align: center; padding: 10px 6px;
+      border-radius: 14px; background: linear-gradient(145deg, #ffe4ec, #f0e4ff);
+      color: var(--rose); font-size: .85rem;
+    }
+    .stat b { display: block; font-size: 1.2rem; margin-bottom: 2px; }
+
+    /* Alert */
+    .alert-box {
+      background: linear-gradient(135deg, #fff0f4, #f5e6ff);
+      border: 1.5px dashed var(--pink-400);
+      border-radius: 16px; padding: 12px 14px;
+    }
+    .alert-box.empty { text-align: center; color: #b07a8a; font-style: italic; }
+    .alert-item {
+      display: flex; gap: 10px; padding: 8px 0;
+      border-bottom: 1px solid rgba(255,179,198,.35);
+    }
+    .alert-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .alert-item:first-child { padding-top: 0; }
+    .alert-dot {
+      width: 10px; height: 10px; margin-top: 6px; border-radius: 50%;
+      background: var(--pink-500); flex-shrink: 0; animation: pulse 1.6s ease infinite;
+    }
+
+    /* Form */
+    .composer { display: flex; flex-direction: column; gap: 10px; }
+    .input-row { display: flex; gap: 8px; }
+    input[type="text"], input[type="date"], input[type="number"], textarea, select {
+      font-family: inherit; font-size: 1rem; color: var(--text);
+      border: 1.5px solid var(--pink-300); border-radius: 14px;
+      background: white; outline: none; padding: 11px 14px;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    input:focus, textarea:focus, select:focus {
+      border-color: #c89be8;
+      box-shadow: 0 0 0 4px rgba(200, 155, 232, .2);
+    }
+    #taskInput { flex: 1; border-radius: 999px; }
+    #taskInput::placeholder, textarea::placeholder { color: #c994a4; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    @media (max-width: 480px) { .form-grid { grid-template-columns: 1fr; } }
+    .important-toggle {
+      display: inline-flex; align-items: center; gap: 8px;
+      cursor: pointer; color: var(--muted); user-select: none;
+    }
+    .important-toggle input {
+      appearance: none; width: 20px; height: 20px;
+      border: 2px solid var(--pink-400); border-radius: 6px;
+      background: white; cursor: pointer; position: relative;
+    }
+    .important-toggle input:checked {
+      background: linear-gradient(135deg, #ff8fab, #c89be8); border-color: #c89be8;
+    }
+    .important-toggle input:checked::after {
+      content: "♥"; position: absolute; inset: 0;
+      display: grid; place-items: center; color: white; font-size: .7rem;
+    }
+    .options {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 10px; flex-wrap: wrap;
+    }
+    button {
+      font-family: inherit; cursor: pointer; border: none;
+      transition: transform .2s ease, box-shadow .25s ease, background .25s, color .2s, opacity .2s;
+    }
+    button:active { transform: scale(.96); }
+
+    #addBtn, .primary-btn {
+      position: relative; overflow: hidden;
+      background: linear-gradient(135deg, #ff8fab 0%, #e091d0 50%, #c89be8 100%);
+      background-size: 180% 180%;
+      color: white;
+      padding: 12px 22px;
+      border-radius: 16px;
+      font-size: 1rem;
+      letter-spacing: 0.02em;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      box-shadow:
+        0 8px 22px rgba(200, 140, 220, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+      transition: transform .2s ease, box-shadow .25s ease, background-position .4s ease;
+    }
+    #addBtn::before, .primary-btn::before {
+      content: "";
+      position: absolute; inset: 0;
+      background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,.4) 50%, transparent 65%);
+      transform: translateX(-130%);
+      transition: transform .55s ease;
+    }
+    #addBtn:hover, .primary-btn:hover {
+      transform: translateY(-2px);
+      background-position: 100% 50%;
+      box-shadow:
+        0 12px 28px rgba(200, 140, 220, 0.5),
+        0 0 0 4px rgba(200, 155, 232, 0.18);
+    }
+    #addBtn:hover::before, .primary-btn:hover::before { transform: translateX(130%); }
+    #addBtn:active, .primary-btn:active {
+      transform: translateY(0) scale(.97);
+      box-shadow: 0 4px 12px rgba(200, 140, 220, 0.3);
+    }
+
+    .toolbar { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+    #searchInput {
+      flex: 1; min-width: 140px; border-radius: 999px; padding: 8px 14px; font-size: .95rem;
+    }
+    .filters {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;
+      padding: 5px;
+      background: rgba(255, 240, 248, 0.55);
+      border-radius: 16px;
+      border: 1px solid rgba(255, 200, 230, 0.45);
+    }
+    .filters button {
+      position: relative;
+      background: rgba(255, 255, 255, 0.7);
+      color: var(--muted);
+      border: 1px solid transparent;
+      padding: 8px 14px;
+      border-radius: 12px;
+      font-size: .88rem;
+      box-shadow: 0 1px 4px rgba(180, 120, 200, 0.08);
+      transition: transform .2s, box-shadow .25s, background .25s, color .2s;
+    }
+    .filters button:hover {
+      color: var(--rose);
+      transform: translateY(-1px);
+      background: white;
+      box-shadow: 0 6px 14px rgba(200, 140, 220, 0.18);
+    }
+    .filters button.active {
+      background: linear-gradient(135deg, #ff8fab, #c89be8);
+      color: white;
+      border-color: transparent;
+      box-shadow: 0 6px 16px rgba(200, 140, 220, 0.35);
+    }
+
+    .todo-list {
+      list-style: none; display: flex; flex-direction: column; gap: 10px;
+      max-height: 460px; overflow-y: auto; padding-right: 2px;
+    }
+    .todo-list::-webkit-scrollbar { width: 6px; }
+    .todo-list::-webkit-scrollbar-thumb {
+      background: linear-gradient(#ffb3c6, #c89be8); border-radius: 99px;
+    }
+    .todo-item {
+      display: grid; grid-template-columns: auto 1fr auto;
+      gap: 10px; align-items: start;
+      padding: 12px; background: rgba(255,255,255,.92);
+      border: 1.5px solid var(--pink-200); border-radius: 16px;
+      animation: fadeUp .3s ease;
+    }
+    .todo-item.important {
+      border-color: #d4b8e8;
+      background: linear-gradient(90deg, #fff5f8, #faf5ff);
+      box-shadow: 0 4px 14px rgba(200, 140, 220, .15);
+    }
+    .todo-item.done { opacity: .62; background: #faf6f7; }
+    .todo-item.done .todo-text { text-decoration: line-through; color: #b07a8a; }
+    .todo-item.overdue:not(.done) { border-color: #e85a7a; }
+
+    .check {
+      appearance: none; width: 24px; height: 24px; margin-top: 2px;
+      border: 2px solid var(--pink-400); border-radius: 8px;
+      cursor: pointer; background: white; position: relative; flex-shrink: 0;
+    }
+    .check:checked {
+      background: linear-gradient(135deg, #ff8fab, #c89be8); border-color: #c89be8;
+    }
+    .check:checked::after {
+      content: "✓"; position: absolute; inset: 0;
+      display: grid; place-items: center; color: white; font-size: .9rem; font-weight: bold;
+    }
+    .todo-text { font-size: 1.05rem; line-height: 1.35; word-break: break-word; }
+    .meta { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+    .badge {
+      font-size: .74rem; color: var(--rose); background: var(--pink-100);
+      padding: 2px 8px; border-radius: 999px;
+    }
+    .badge.cat { background: #f0e4ff; color: var(--kuromi); }
+    .badge.due { background: #ffe8c8; color: #a66b2b; }
+    .badge.overdue { background: #ffd0d8; color: #c04060; }
+    .note-preview {
+      margin-top: 6px; font-size: .88rem; color: var(--muted);
+      font-style: italic; white-space: pre-wrap;
+    }
+    .actions { display: flex; flex-direction: column; gap: 6px; }
+    .icon-btn {
+      width: 34px; height: 34px; border-radius: 12px;
+      display: grid; place-items: center; font-size: .95rem;
+      background: rgba(255, 255, 255, 0.85);
+      color: var(--pink-400);
+      border: 1px solid rgba(255, 200, 230, 0.55);
+      box-shadow: 0 2px 8px rgba(180, 120, 200, 0.1);
+      backdrop-filter: blur(6px);
+      transition: transform .2s, box-shadow .25s, background .2s, color .2s, border-color .2s;
+    }
+    .icon-btn.on {
+      color: white;
+      background: linear-gradient(135deg, #ff8fab, #c89be8);
+      border-color: transparent;
+      box-shadow: 0 4px 12px rgba(200, 140, 220, 0.35);
+    }
+    .icon-btn:hover {
+      background: linear-gradient(135deg, #ffe0e8, #f0e4ff);
+      color: var(--rose);
+      transform: translateY(-2px) scale(1.05);
+      box-shadow: 0 8px 16px rgba(200, 140, 220, 0.22);
+    }
+    .icon-btn.del-btn:hover, .icon-btn.del-note:hover {
+      background: linear-gradient(135deg, #ffd0d8, #ffb3c6);
+      color: #c04060;
+    }
+    .empty { text-align: center; padding: 28px 12px; color: #b07a8a; font-style: italic; }
+    .footer-actions {
+      display: flex; justify-content: space-between; gap: 8px;
+      margin-top: 12px; flex-wrap: wrap; align-items: center;
+    }
+    .clear-btn, .ghost-btn {
+      background: rgba(255, 255, 255, 0.65);
+      color: #9a6b78;
+      font-size: .9rem;
+      padding: 8px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 200, 230, 0.5);
+      text-decoration: none;
+      box-shadow: 0 2px 8px rgba(180, 120, 200, 0.08);
+      transition: transform .2s, box-shadow .25s, background .2s, color .2s;
+    }
+    .clear-btn:hover, .ghost-btn:hover {
+      color: var(--rose);
+      background: white;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px rgba(200, 140, 220, 0.18);
+    }
+
+    .notes-toolbar { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+    #noteTitle, #noteBody { width: 100%; }
+    #noteBody { min-height: 90px; resize: vertical; line-height: 1.45; }
+    .notes-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px;
+    }
+    .note-card {
+      border: 1.5px solid var(--pink-200); border-radius: 16px; padding: 12px;
+      position: relative; min-height: 120px;
+      box-shadow: 0 6px 16px rgba(200, 155, 232, .18);
+      animation: fadeUp .3s ease;
+    }
+    .note-card.pink { background: linear-gradient(160deg, #fff0f5, #ffe4ec); }
+    .note-card.lavender { background: linear-gradient(160deg, #f8f0ff, #ead8f8); }
+    .note-card.peach { background: linear-gradient(160deg, #fff5eb, #ffe8d6); }
+    .note-card h3 {
+      font-size: 1rem; color: var(--kuromi-deep); margin-bottom: 6px;
+      padding-right: 24px; font-weight: 700;
+    }
+    .note-card p { font-size: .9rem; color: var(--text); white-space: pre-wrap; line-height: 1.4; }
+    .note-card .note-date { margin-top: 10px; font-size: .75rem; color: #b07a8a; }
+    .note-card .del-note { position: absolute; top: 8px; right: 8px; }
+
+    .goal-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .goal-row input { width: 80px; text-align: center; border-radius: 999px; }
+
+    .modal-bg {
+      position: fixed; inset: 0; background: rgba(80, 40, 90, .4);
+      z-index: 30; display: none; align-items: center; justify-content: center;
+      padding: 16px;
+    }
+    .modal-bg.show { display: flex; }
+    .modal {
+      background: white; border-radius: 22px; padding: 20px;
+      width: min(420px, 100%); box-shadow: var(--shadow);
+      border: 1.5px solid #e0c8f0; animation: bounceIn .35s ease;
+    }
+    .modal h3 { color: var(--rose); margin-bottom: 12px; font-weight: 400; font-size: 1.2rem; }
+    .modal .field { margin-bottom: 10px; }
+    .modal label { display: block; font-size: .9rem; color: var(--muted); margin-bottom: 4px; }
+    .modal input, .modal textarea, .modal select { width: 100%; }
+    .modal textarea { min-height: 70px; resize: vertical; }
+    .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px; }
+    .modal-actions .cancel {
+      background: rgba(255, 240, 248, 0.95);
+      color: var(--muted);
+      padding: 10px 18px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 200, 230, 0.55);
+      box-shadow: 0 2px 8px rgba(180, 120, 200, 0.1);
+      transition: transform .2s, box-shadow .25s, background .2s, color .2s;
+    }
+    .modal-actions .cancel:hover {
+      color: var(--rose);
+      background: white;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px rgba(200, 140, 220, 0.18);
+    }
+
+    .toast {
+      position: fixed; left: 50%; bottom: 24px;
+      transform: translateX(-50%) translateY(20px);
+      background: rgba(255,255,255,.95); color: var(--text);
+      border: 1.5px solid #e0c8f0;
+      padding: 12px 18px; border-radius: 999px;
+      box-shadow: var(--shadow); opacity: 0; pointer-events: none;
+      transition: .3s; z-index: 40; font-size: .95rem; max-width: 90vw;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    .confetti {
+      position: fixed; pointer-events: none; z-index: 50;
+      font-size: 1.1rem; animation: confettiFall 1.2s ease forwards;
+    }
+    @keyframes confettiFall {
+      0% { transform: translateY(0) rotate(0); opacity: 1; }
+      100% { transform: translateY(120px) rotate(240deg); opacity: 0; }
+    }
+
+    .side-kuromi {
+      position: fixed; bottom: 12px; right: 10px; width: 72px; height: 72px;
+      z-index: 2; opacity: .9; pointer-events: none;
+      filter: drop-shadow(0 4px 12px rgba(160,100,200,.25));
+      animation: float 5s ease-in-out infinite;
+    }
+    @media (max-width: 700px) { .side-kuromi { display: none; } }
+    @media (max-width: 480px) {
+      .input-row { flex-direction: column; }
+      #addBtn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="sparkles" id="sparkles" aria-hidden="true"></div>
+  <div class="deco" aria-hidden="true">
+    <span>♡</span><span>★</span><span>✿</span><span>✧</span><span>♡</span><span>❀</span>
+  </div>
+
+  <svg class="side-kuromi" viewBox="0 0 120 120" aria-hidden="true">
+    <path d="M28 48 C18 10, 42 8, 48 42" fill="#2d2438"/>
+    <path d="M92 48 C102 10, 78 8, 72 42" fill="#2d2438"/>
+    <path d="M30 44 C24 18, 40 16, 44 40" fill="#ff8fab"/>
+    <path d="M90 44 C96 18, 80 16, 76 40" fill="#ff8fab"/>
+    <ellipse cx="60" cy="62" rx="34" ry="30" fill="#2d2438"/>
+    <path d="M48 38 L60 18 L72 38 Z" fill="#2d2438"/>
+    <circle cx="60" cy="26" r="5" fill="#ff8fab"/>
+    <path d="M56 24 L60 30 L64 24" fill="#fff"/>
+    <ellipse cx="60" cy="66" rx="26" ry="22" fill="#fff5f8"/>
+    <ellipse cx="48" cy="64" rx="5" ry="6" fill="#2d2438"/>
+    <ellipse cx="72" cy="64" rx="5" ry="6" fill="#2d2438"/>
+    <circle cx="50" cy="62" r="1.6" fill="#fff"/>
+    <circle cx="74" cy="62" r="1.6" fill="#fff"/>
+    <ellipse cx="40" cy="72" rx="5" ry="3" fill="#ffb3c6" opacity=".75"/>
+    <ellipse cx="80" cy="72" rx="5" ry="3" fill="#ffb3c6" opacity=".75"/>
+    <path d="M54 76 Q60 82 66 76" stroke="#2d2438" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <circle cx="60" cy="90" r="7" fill="#ff8fab"/>
+    <circle cx="57.5" cy="89" r="1.2" fill="#2d2438"/>
+    <circle cx="62.5" cy="89" r="1.2" fill="#2d2438"/>
+  </svg>
+
+  <div class="app">
+    <div class="lang-bar">
+      <button type="button" data-lang="vi" class="active">VI · Việt</button>
+      <button type="button" data-lang="en">EN · English</button>
+      <button type="button" data-lang="ko">KO · 한국어</button>
+    </div>
+
+    <header>
+      <div class="hero">
+        <div class="kuromi-wrap" aria-hidden="true">
+          <svg viewBox="0 0 120 120">
+            <path d="M28 48 C18 10, 42 8, 48 42" fill="#2d2438"/>
+            <path d="M92 48 C102 10, 78 8, 72 42" fill="#2d2438"/>
+            <path d="M30 44 C24 18, 40 16, 44 40" fill="#ff8fab"/>
+            <path d="M90 44 C96 18, 80 16, 76 40" fill="#ff8fab"/>
+            <ellipse cx="60" cy="62" rx="34" ry="30" fill="#2d2438"/>
+            <path d="M48 38 L60 18 L72 38 Z" fill="#2d2438"/>
+            <circle cx="60" cy="26" r="5" fill="#ff8fab"/>
+            <path d="M56 24 L60 30 L64 24" fill="#fff"/>
+            <ellipse cx="60" cy="66" rx="26" ry="22" fill="#fff5f8"/>
+            <ellipse cx="48" cy="64" rx="5" ry="6" fill="#2d2438"/>
+            <ellipse cx="72" cy="64" rx="5" ry="6" fill="#2d2438"/>
+            <circle cx="50" cy="62" r="1.6" fill="#fff"/>
+            <circle cx="74" cy="62" r="1.6" fill="#fff"/>
+            <ellipse cx="40" cy="72" rx="5" ry="3" fill="#ffb3c6" opacity=".75"/>
+            <ellipse cx="80" cy="72" rx="5" ry="3" fill="#ffb3c6" opacity=".75"/>
+            <path d="M54 76 Q60 82 66 76" stroke="#2d2438" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <circle cx="60" cy="90" r="7" fill="#ff8fab"/>
+            <circle cx="57.5" cy="89" r="1.2" fill="#2d2438"/>
+            <circle cx="62.5" cy="89" r="1.2" fill="#2d2438"/>
+          </svg>
+        </div>
+        <div>
+          <h1 data-i18n="appTitle">Kuromi To-do</h1>
+          <p class="greeting"><span data-i18n="hello">Xin chào,</span> <strong>Hoàng Thị Ngọc Ánh</strong> ♡</p>
+          <p class="date-line" id="todayDate"></p>
+        </div>
+      </div>
+      <p class="quote" id="quote"></p>
+    </header>
+
+    <nav class="tabs">
+      <button type="button" class="active" data-tab="about" data-i18n="tabAbout">♡ Giới thiệu</button>
+      <button type="button" data-tab="tasks" data-i18n="tabTasks">✿ Việc làm</button>
+      <button type="button" data-tab="progress" data-i18n="tabProgress">✦ Tiến độ</button>
+      <button type="button" data-tab="notes" data-i18n="tabNotes">✎ Ghi chú</button>
+    </nav>
+
+    <!-- ABOUT -->
+    <div class="panel active" id="panel-about">
+      <section class="card">
+        <h2 data-i18n="aboutTitle">♡ Về mình</h2>
+        <div class="about-hero">
+          <div class="about-avatar">NA</div>
+          <div style="flex:1;min-width:200px">
+            <div class="about-name">Hoàng Thị Ngọc Ánh</div>
+            <div class="about-role" data-i18n="aboutRole">Sinh viên Ngôn ngữ Hàn</div>
+            <p class="about-bio" data-i18n="aboutBio">
+              Xin chào! Mình là Hoàng Thị Ngọc Ánh — cựu sinh viên trường đại học top 1 về kinh tế – kỹ thuật tại Việt Nam.
+              Hiện tại mình đang theo học ngành Ngôn ngữ Hàn, không ngừng trau dồi kiến thức và kỹ năng để tiến gần hơn đến ước mơ của mình.
+            </p>
+          </div>
+        </div>
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="label" data-i18n="labelPast">Học vấn trước đây</div>
+            <div class="value" data-i18n="infoPast">Cựu sinh viên ĐH top 1 Kinh tế – Kỹ thuật Việt Nam</div>
+          </div>
+          <div class="info-item">
+            <div class="label" data-i18n="labelNow">Hiện tại</div>
+            <div class="value" data-i18n="infoNow">Sinh viên Ngôn ngữ Hàn</div>
+          </div>
+        </div>
+        <div class="dream-box">
+          <strong data-i18n="dreamLabel">Ước mơ:</strong>
+          <span data-i18n="dreamText"> Trở thành giảng viên tiến sĩ đại học — truyền cảm hứng và tri thức cho thế hệ sau.</span>
+        </div>
+        <div class="about-tags">
+          <span class="tag" data-i18n="tag1">🇰🇷 Ngôn ngữ Hàn</span>
+          <span class="tag" data-i18n="tag2">📚 Học thuật</span>
+          <span class="tag" data-i18n="tag3">🎓 Tiến sĩ tương lai</span>
+          <span class="tag" data-i18n="tag4">♡ Kuromi vibe</span>
+        </div>
+      </section>
+    </div>
+
+    <!-- TASKS -->
+    <div class="panel" id="panel-tasks">
+      <section class="card">
+        <h2 data-i18n="importantTitle">⚠ Việc quan trọng hôm nay</h2>
+        <div class="alert-box" id="importantAlert"></div>
+      </section>
+
+      <section class="card">
+        <h2 data-i18n="addTitle">✦ Thêm việc mới</h2>
+        <form class="composer" id="todoForm">
+          <div class="input-row">
+            <input type="text" id="taskInput" data-i18n-placeholder="taskPlaceholder" maxlength="140" required />
+            <button type="submit" id="addBtn" data-i18n="addBtn">Thêm ♡</button>
+          </div>
+          <div class="form-grid">
+            <select id="categorySelect" aria-label="Category">
+              <option value="Chung" data-i18n="catGeneral">📁 Chung</option>
+              <option value="Học tập" data-i18n="catStudy">📚 Học tập</option>
+              <option value="Công việc" data-i18n="catWork">💼 Công việc</option>
+              <option value="Cá nhân" data-i18n="catPersonal">🌸 Cá nhân</option>
+              <option value="Sức khỏe" data-i18n="catHealth">💪 Sức khỏe</option>
+            </select>
+            <input type="date" id="dueDate" />
+          </div>
+          <textarea id="taskNote" data-i18n-placeholder="taskNotePlaceholder" maxlength="300"></textarea>
+          <div class="options">
+            <label class="important-toggle">
+              <input type="checkbox" id="importantCheck" />
+              <span data-i18n="markImportant">Việc quan trọng trong ngày</span>
+            </label>
+          </div>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2 data-i18n="listTitle">✿ Danh sách công việc</h2>
+        <div class="toolbar">
+          <input type="text" id="searchInput" data-i18n-placeholder="searchPlaceholder" />
+        </div>
+        <div class="filters">
+          <button type="button" class="active" data-filter="all" data-i18n="filterAll">Tất cả</button>
+          <button type="button" data-filter="active" data-i18n="filterActive">Chưa xong</button>
+          <button type="button" data-filter="important" data-i18n="filterImportant">Quan trọng</button>
+          <button type="button" data-filter="done" data-i18n="filterDone">Đã xong</button>
+          <button type="button" data-filter="overdue" data-i18n="filterOverdue">Quá hạn</button>
+        </div>
+        <ul class="todo-list" id="todoList"></ul>
+        <div class="footer-actions">
+          <button type="button" class="ghost-btn" id="exportBtn" data-i18n="exportBtn">Xuất dữ liệu</button>
+          <button type="button" class="clear-btn" id="clearDone" data-i18n="clearDone">Xóa việc đã xong</button>
+        </div>
+      </section>
+    </div>
+
+    <!-- PROGRESS -->
+    <div class="panel" id="panel-progress">
+      <section class="card">
+        <h2 data-i18n="progressTitle">✦ Tiến độ hôm nay</h2>
+        <div class="progress-grid">
+          <div class="ring">
+            <svg width="110" height="110" viewBox="0 0 110 110">
+              <circle cx="55" cy="55" r="46" fill="none" stroke="#f0e4ff" stroke-width="10"/>
+              <circle id="progressCircle" cx="55" cy="55" r="46" fill="none"
+                stroke="url(#gradRing)" stroke-width="10" stroke-linecap="round"
+                stroke-dasharray="289" stroke-dashoffset="289"/>
+              <defs>
+                <linearGradient id="gradRing" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#ff8fab"/>
+                  <stop offset="100%" stop-color="#c89be8"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <div class="ring-label">
+              <span><span id="progressPct">0</span>%<small data-i18n="completed">hoàn thành</small></span>
+            </div>
+          </div>
+          <div>
+            <div class="bar-block">
+              <div class="bar-top"><span data-i18n="barAll">Tất cả việc</span><span id="barAllLabel">0/0</span></div>
+              <div class="bar"><i id="barAll"></i></div>
+            </div>
+            <div class="bar-block">
+              <div class="bar-top"><span data-i18n="barImp">Việc quan trọng</span><span id="barImpLabel">0/0</span></div>
+              <div class="bar important"><i id="barImp"></i></div>
+            </div>
+            <div class="stats-mini">
+              <div class="stat"><b id="statTotal">0</b><span data-i18n="statTotal">Tổng</span></div>
+              <div class="stat"><b id="statDone">0</b><span data-i18n="statDone">Xong</span></div>
+              <div class="stat"><b id="statLeft">0</b><span data-i18n="statLeft">Còn</span></div>
+              <div class="stat"><b id="statStreak">0</b><span data-i18n="statStreak">Streak</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2 data-i18n="goalTitle">🎯 Mục tiêu ngày</h2>
+        <p style="color:var(--muted);margin-bottom:10px;font-size:.95rem;" data-i18n="goalHint">
+          Kuromi sẽ cổ vũ khi Ngọc Ánh đạt mục tiêu hoàn thành!
+        </p>
+        <div class="goal-row">
+          <label for="dailyGoal" data-i18n="goalLabel">Số việc cần xong:</label>
+          <input type="number" id="dailyGoal" min="1" max="50" value="3" />
+          <button type="button" class="primary-btn" id="saveGoal" data-i18n="saveGoal">Lưu</button>
+        </div>
+        <p id="goalStatus" style="margin-top:12px;color:var(--kuromi);font-style:italic;"></p>
+      </section>
+
+      <section class="card">
+        <h2 data-i18n="catStatsTitle">📊 Theo danh mục</h2>
+        <div id="categoryStats"></div>
+      </section>
+    </div>
+
+    <!-- NOTES -->
+    <div class="panel" id="panel-notes">
+      <section class="card">
+        <h2 data-i18n="noteWriteTitle">✎ Viết ghi chú mới</h2>
+        <form id="noteForm" class="composer">
+          <input type="text" id="noteTitle" data-i18n-placeholder="noteTitlePh" maxlength="60" required />
+          <textarea id="noteBody" data-i18n-placeholder="noteBodyPh" maxlength="800" required></textarea>
+          <div class="notes-toolbar">
+            <select id="noteColor">
+              <option value="pink" data-i18n="colorPink">Hồng</option>
+              <option value="lavender" data-i18n="colorLavender">Tím</option>
+              <option value="peach" data-i18n="colorPeach">Đào</option>
+            </select>
+            <button type="submit" class="primary-btn" data-i18n="saveNote">Lưu ghi chú ♡</button>
+          </div>
+        </form>
+      </section>
+      <section class="card">
+        <h2 data-i18n="noteListTitle">♡ Nhật ký & ghi chú</h2>
+        <div class="notes-grid" id="notesGrid"></div>
+      </section>
+    </div>
+  </div>
+
+  <div class="modal-bg" id="editModal" role="dialog" aria-modal="true">
+    <div class="modal">
+      <h3 data-i18n="editTitle">Sửa công việc</h3>
+      <div class="field">
+        <label for="editText" data-i18n="editContent">Nội dung</label>
+        <input type="text" id="editText" maxlength="140" />
+      </div>
+      <div class="field">
+        <label for="editCategory" data-i18n="editCategory">Danh mục</label>
+        <select id="editCategory">
+          <option value="Chung">Chung</option>
+          <option value="Học tập">Học tập</option>
+          <option value="Công việc">Công việc</option>
+          <option value="Cá nhân">Cá nhân</option>
+          <option value="Sức khỏe">Sức khỏe</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="editDue" data-i18n="editDue">Hạn</label>
+        <input type="date" id="editDue" />
+      </div>
+      <div class="field">
+        <label for="editNote" data-i18n="editNote">Ghi chú</label>
+        <textarea id="editNote" maxlength="300"></textarea>
+      </div>
+      <label class="important-toggle">
+        <input type="checkbox" id="editImportant" />
+        <span data-i18n="markImportant">Việc quan trọng</span>
+      </label>
+      <div class="modal-actions">
+        <button type="button" class="cancel" id="cancelEdit" data-i18n="cancel">Hủy</button>
+        <button type="button" class="primary-btn" id="saveEdit" data-i18n="save">Lưu</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <script>
+    /* ===== i18n ===== */
+    const I18N = {
+      vi: {
+        appTitle: "Kuromi To-do",
+        hello: "Xin chào,",
+        tabAbout: "♡ Giới thiệu",
+        tabTasks: "✿ Việc làm",
+        tabProgress: "✦ Tiến độ",
+        tabNotes: "✎ Ghi chú",
+        aboutTitle: "♡ Về mình",
+        aboutRole: "Sinh viên Ngôn ngữ Hàn",
+        aboutBio: "Xin chào! Mình là Hoàng Thị Ngọc Ánh — cựu sinh viên trường đại học top 1 về kinh tế – kỹ thuật tại Việt Nam. Hiện tại mình đang theo học ngành Ngôn ngữ Hàn, không ngừng trau dồi kiến thức và kỹ năng để tiến gần hơn đến ước mơ của mình.",
+        labelPast: "Học vấn trước đây",
+        infoPast: "Cựu sinh viên ĐH top 1 Kinh tế – Kỹ thuật Việt Nam",
+        labelNow: "Hiện tại",
+        infoNow: "Sinh viên Ngôn ngữ Hàn",
+        dreamLabel: "Ước mơ:",
+        dreamText: " Trở thành giảng viên tiến sĩ đại học — truyền cảm hứng và tri thức cho thế hệ sau.",
+        tag1: "🇰🇷 Ngôn ngữ Hàn",
+        tag2: "📚 Học thuật",
+        tag3: "🎓 Tiến sĩ tương lai",
+        tag4: "♡ Kuromi vibe",
+        importantTitle: "⚠ Việc quan trọng hôm nay",
+        importantEmpty: "Chưa có việc quan trọng nào. Đánh dấu ♥ để Kuromi nhắc nhé!",
+        importantHi: "Ngọc Ánh ơi!",
+        importantDont: "Đừng quên:",
+        addTitle: "✦ Thêm việc mới",
+        taskPlaceholder: "Ngọc Ánh cần làm gì hôm nay?",
+        taskNotePlaceholder: "Ghi chú cho việc này (tuỳ chọn)...",
+        addBtn: "Thêm ♡",
+        markImportant: "Việc quan trọng trong ngày",
+        catGeneral: "📁 Chung",
+        catStudy: "📚 Học tập",
+        catWork: "💼 Công việc",
+        catPersonal: "🌸 Cá nhân",
+        catHealth: "💪 Sức khỏe",
+        listTitle: "✿ Danh sách công việc",
+        searchPlaceholder: "Tìm việc...",
+        filterAll: "Tất cả",
+        filterActive: "Chưa xong",
+        filterImportant: "Quan trọng",
+        filterDone: "Đã xong",
+        filterOverdue: "Quá hạn",
+        exportBtn: "Xuất dữ liệu",
+        clearDone: "Xóa việc đã xong",
+        emptyTodos: "Chưa có công việc nào ở đây ♡",
+        badgeImportant: "♥ Quan trọng",
+        badgeDue: "Hạn",
+        badgeOverdue: "Quá hạn",
+        progressTitle: "✦ Tiến độ hôm nay",
+        completed: "hoàn thành",
+        barAll: "Tất cả việc",
+        barImp: "Việc quan trọng",
+        statTotal: "Tổng",
+        statDone: "Xong",
+        statLeft: "Còn",
+        statStreak: "Streak",
+        goalTitle: "🎯 Mục tiêu ngày",
+        goalHint: "Kuromi sẽ cổ vũ khi Ngọc Ánh đạt mục tiêu hoàn thành!",
+        goalLabel: "Số việc cần xong:",
+        saveGoal: "Lưu",
+        goalReached: "Yay! Ngọc Ánh đã đạt mục tiêu {n} việc rồi! Kuromi tự hào lắm ♡",
+        goalLeft: "Còn {n} việc nữa là đạt mục tiêu {g} việc hôm nay~",
+        catStatsTitle: "📊 Theo danh mục",
+        noCatData: "Chưa có dữ liệu danh mục",
+        noteWriteTitle: "✎ Viết ghi chú mới",
+        noteTitlePh: "Tiêu đề ghi chú...",
+        noteBodyPh: "Lời nhắn, ý tưởng, nhắc bản thân...",
+        colorPink: "Hồng",
+        colorLavender: "Tím",
+        colorPeach: "Đào",
+        saveNote: "Lưu ghi chú ♡",
+        noteListTitle: "♡ Nhật ký & ghi chú",
+        emptyNotes: "Chưa có ghi chú nào. Viết gì đó dễ thương đi nào ♡",
+        editTitle: "Sửa công việc",
+        editContent: "Nội dung",
+        editCategory: "Danh mục",
+        editDue: "Hạn",
+        editNote: "Ghi chú",
+        cancel: "Hủy",
+        save: "Lưu",
+        toastAdd: "Đã thêm việc mới ♡",
+        toastDone: "Hoàn thành rồi, giỏi lắm Ngọc Ánh! ♡",
+        toastUndone: "Đã bỏ tick hoàn thành",
+        toastStarOn: "Kuromi sẽ nhắc việc này!",
+        toastStarOff: "Đã bỏ đánh dấu quan trọng",
+        toastDelete: "Đã xóa công việc",
+        toastEdit: "Đã cập nhật công việc ✎",
+        toastEmpty: "Nội dung không được trống",
+        toastClearNone: "Không có việc đã xong để xóa",
+        toastCleared: "Đã dọn các việc hoàn thành",
+        toastGoal: "Đã đặt mục tiêu {n} việc/ngày",
+        toastExport: "Đã xuất dữ liệu JSON",
+        toastNote: "Đã lưu ghi chú ♡",
+        toastNoteDel: "Đã xóa ghi chú",
+        toastRemind: "Ngọc Ánh còn {n} việc quan trọng hôm nay!",
+        quotes: [
+          "Kuromi bảo: hôm nay cũng dễ thương thôi nè~",
+          "Làm từng việc một, Ngọc Ánh giỏi lắm! ♡",
+          "Ước mơ tiến sĩ bắt đầu từ việc nhỏ hôm nay ✧",
+          "Ngôn ngữ Hàn + kỷ luật = tương lai giảng viên!",
+          "Kuromi đang cổ vũ Ngọc Ánh từ bên cạnh ♡",
+        ],
+        weekdays: ["Chủ Nhật","Thứ Hai","Thứ Ba","Thứ Tư","Thứ Năm","Thứ Sáu","Thứ Bảy"],
+      },
+      en: {
+        appTitle: "Kuromi To-do",
+        hello: "Hello,",
+        tabAbout: "♡ About",
+        tabTasks: "✿ Tasks",
+        tabProgress: "✦ Progress",
+        tabNotes: "✎ Notes",
+        aboutTitle: "♡ About me",
+        aboutRole: "Korean Language Student",
+        aboutBio: "Hi! I'm Hoàng Thị Ngọc Ánh — a former student of Vietnam's top university for economics and engineering. I'm currently studying Korean Language, constantly improving my knowledge and skills to get closer to my dream.",
+        labelPast: "Previous education",
+        infoPast: "Alumna of Vietnam's top Economics–Engineering university",
+        labelNow: "Currently",
+        infoNow: "Korean Language student",
+        dreamLabel: "Dream:",
+        dreamText: " Become a university lecturer with a PhD — inspiring and sharing knowledge with the next generation.",
+        tag1: "🇰🇷 Korean Language",
+        tag2: "📚 Academia",
+        tag3: "🎓 Future PhD",
+        tag4: "♡ Kuromi vibe",
+        importantTitle: "⚠ Important today",
+        importantEmpty: "No important tasks yet. Mark ♥ and Kuromi will remind you!",
+        importantHi: "Hey Ngọc Ánh!",
+        importantDont: "Don't forget:",
+        addTitle: "✦ Add a new task",
+        taskPlaceholder: "What should Ngọc Ánh do today?",
+        taskNotePlaceholder: "Note for this task (optional)...",
+        addBtn: "Add ♡",
+        markImportant: "Mark as important today",
+        catGeneral: "📁 General",
+        catStudy: "📚 Study",
+        catWork: "💼 Work",
+        catPersonal: "🌸 Personal",
+        catHealth: "💪 Health",
+        listTitle: "✿ Task list",
+        searchPlaceholder: "Search tasks...",
+        filterAll: "All",
+        filterActive: "Active",
+        filterImportant: "Important",
+        filterDone: "Done",
+        filterOverdue: "Overdue",
+        exportBtn: "Export data",
+        clearDone: "Clear completed",
+        emptyTodos: "No tasks here yet ♡",
+        badgeImportant: "♥ Important",
+        badgeDue: "Due",
+        badgeOverdue: "Overdue",
+        progressTitle: "✦ Today's progress",
+        completed: "done",
+        barAll: "All tasks",
+        barImp: "Important tasks",
+        statTotal: "Total",
+        statDone: "Done",
+        statLeft: "Left",
+        statStreak: "Streak",
+        goalTitle: "🎯 Daily goal",
+        goalHint: "Kuromi will cheer when Ngọc Ánh hits the goal!",
+        goalLabel: "Tasks to finish:",
+        saveGoal: "Save",
+        goalReached: "Yay! Ngọc Ánh hit the goal of {n} tasks! Kuromi is proud ♡",
+        goalLeft: "{n} more task(s) to reach today's goal of {g}~",
+        catStatsTitle: "📊 By category",
+        noCatData: "No category data yet",
+        noteWriteTitle: "✎ Write a new note",
+        noteTitlePh: "Note title...",
+        noteBodyPh: "Messages, ideas, reminders...",
+        colorPink: "Pink",
+        colorLavender: "Lavender",
+        colorPeach: "Peach",
+        saveNote: "Save note ♡",
+        noteListTitle: "♡ Journal & notes",
+        emptyNotes: "No notes yet. Write something cute ♡",
+        editTitle: "Edit task",
+        editContent: "Content",
+        editCategory: "Category",
+        editDue: "Due date",
+        editNote: "Note",
+        cancel: "Cancel",
+        save: "Save",
+        toastAdd: "New task added ♡",
+        toastDone: "Done! Great job, Ngọc Ánh! ♡",
+        toastUndone: "Unchecked completion",
+        toastStarOn: "Kuromi will remind you!",
+        toastStarOff: "Unmarked as important",
+        toastDelete: "Task deleted",
+        toastEdit: "Task updated ✎",
+        toastEmpty: "Content cannot be empty",
+        toastClearNone: "No completed tasks to clear",
+        toastCleared: "Cleared completed tasks",
+        toastGoal: "Daily goal set to {n}",
+        toastExport: "JSON exported",
+        toastNote: "Note saved ♡",
+        toastNoteDel: "Note deleted",
+        toastRemind: "Ngọc Ánh still has {n} important task(s) today!",
+        quotes: [
+          "Kuromi says: be cute and productive today~",
+          "One task at a time — you've got this, Ngọc Ánh! ♡",
+          "A PhD dream starts with today's small wins ✧",
+          "Korean + discipline = future professor!",
+          "Kuromi is cheering for you ♡",
+        ],
+        weekdays: ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
+      },
+      ko: {
+        appTitle: "쿠로미 투두",
+        hello: "안녕하세요,",
+        tabAbout: "♡ 소개",
+        tabTasks: "✿ 할 일",
+        tabProgress: "✦ 진행도",
+        tabNotes: "✎ 메모",
+        aboutTitle: "♡ 자기소개",
+        aboutRole: "한국어 전공 학생",
+        aboutBio: "안녕하세요! 저는 황티응옥아인(Hoàng Thị Ngọc Ánh)입니다. 베트남 경제·기술 분야 최고 대학의 졸업생이었고, 현재는 한국어를 전공하며 꿈을 향해 지식을 쌓고 있습니다.",
+        labelPast: "이전 학력",
+        infoPast: "베트남 경제·기술 최고 대학 졸업",
+        labelNow: "현재",
+        infoNow: "한국어 전공 학생",
+        dreamLabel: "꿈:",
+        dreamText: " 대학 박사 강사가 되어 다음 세대에게 영감과 지식을 전하고 싶어요.",
+        tag1: "🇰🇷 한국어",
+        tag2: "📚 학문",
+        tag3: "🎓 미래 박사",
+        tag4: "♡ 쿠로미 감성",
+        importantTitle: "⚠ 오늘의 중요 할 일",
+        importantEmpty: "아직 중요한 일이 없어요. ♥를 눌러 쿠로미에게 알려주세요!",
+        importantHi: "응옥아인!",
+        importantDont: "잊지 마세요:",
+        addTitle: "✦ 새 할 일 추가",
+        taskPlaceholder: "오늘 응옥아인은 무엇을 할까요?",
+        taskNotePlaceholder: "이 할 일의 메모 (선택)...",
+        addBtn: "추가 ♡",
+        markImportant: "오늘의 중요 할 일",
+        catGeneral: "📁 일반",
+        catStudy: "📚 공부",
+        catWork: "💼 업무",
+        catPersonal: "🌸 개인",
+        catHealth: "💪 건강",
+        listTitle: "✿ 할 일 목록",
+        searchPlaceholder: "검색...",
+        filterAll: "전체",
+        filterActive: "미완료",
+        filterImportant: "중요",
+        filterDone: "완료",
+        filterOverdue: "기한 지남",
+        exportBtn: "데이터 내보내기",
+        clearDone: "완료 항목 삭제",
+        emptyTodos: "아직 할 일이 없어요 ♡",
+        badgeImportant: "♥ 중요",
+        badgeDue: "기한",
+        badgeOverdue: "기한 지남",
+        progressTitle: "✦ 오늘의 진행도",
+        completed: "완료",
+        barAll: "전체 할 일",
+        barImp: "중요 할 일",
+        statTotal: "전체",
+        statDone: "완료",
+        statLeft: "남음",
+        statStreak: "연속",
+        goalTitle: "🎯 일일 목표",
+        goalHint: "목표를 달성하면 쿠로미가 응원해요!",
+        goalLabel: "완료할 할 일 수:",
+        saveGoal: "저장",
+        goalReached: "야호! 응옥아인이 {n}개 목표를 달성했어요! 쿠로미도 자랑스러워요 ♡",
+        goalLeft: "오늘 목표 {g}개까지 {n}개 남았어요~",
+        catStatsTitle: "📊 카테고리별",
+        noCatData: "카테고리 데이터가 없어요",
+        noteWriteTitle: "✎ 새 메모 작성",
+        noteTitlePh: "메모 제목...",
+        noteBodyPh: "메시지, 아이디어, 다짐...",
+        colorPink: "핑크",
+        colorLavender: "라벤더",
+        colorPeach: "피치",
+        saveNote: "메모 저장 ♡",
+        noteListTitle: "♡ 일기 & 메모",
+        emptyNotes: "아직 메모가 없어요. 귀엽게 적어볼까요 ♡",
+        editTitle: "할 일 수정",
+        editContent: "내용",
+        editCategory: "카테고리",
+        editDue: "기한",
+        editNote: "메모",
+        cancel: "취소",
+        save: "저장",
+        toastAdd: "새 할 일을 추가했어요 ♡",
+        toastDone: "완료! 잘했어요 응옥아인! ♡",
+        toastUndone: "완료 표시를 해제했어요",
+        toastStarOn: "쿠로미가 이 일을 기억할게요!",
+        toastStarOff: "중요 표시를 해제했어요",
+        toastDelete: "할 일을 삭제했어요",
+        toastEdit: "할 일을 수정했어요 ✎",
+        toastEmpty: "내용을 입력해주세요",
+        toastClearNone: "삭제할 완료 항목이 없어요",
+        toastCleared: "완료된 할 일을 정리했어요",
+        toastGoal: "일일 목표를 {n}개로 설정했어요",
+        toastExport: "JSON을 내보냈어요",
+        toastNote: "메모를 저장했어요 ♡",
+        toastNoteDel: "메모를 삭제했어요",
+        toastRemind: "오늘 중요한 할 일이 {n}개 남았어요!",
+        quotes: [
+          "쿠로미: 오늘도 귀엽고 열심히 해보자~",
+          "하나씩 차근차근, 응옥아인 파이팅! ♡",
+          "박사 꿈은 오늘의 작은 실천부터 ✧",
+          "한국어 + 성실함 = 미래의 대학 강사!",
+          "쿠로미가 옆에서 응원하고 있어요 ♡",
+        ],
+        weekdays: ["일요일","월요일","화요일","수요일","목요일","금요일","토요일"],
+      },
+    };
+
+    const KEY = "kuromi-todo-hoang-anh-v3";
+    const NOTES_KEY = "kuromi-notes-hoang-anh-v3";
+    const META_KEY = "kuromi-meta-hoang-anh-v3";
+    const LANG_KEY = "kuromi-lang-hoang-anh";
+
+    let lang = localStorage.getItem(LANG_KEY) || "vi";
+    let todos = load(KEY, []);
+    let notes = load(NOTES_KEY, []);
+    let meta = load(META_KEY, { dailyGoal: 3, streak: 0, lastDoneDate: null });
+    let filter = "all";
+    let search = "";
+    let editingId = null;
+
+    const $ = (id) => document.getElementById(id);
+    const t = (key, vars = {}) => {
+      let s = (I18N[lang] && I18N[lang][key]) || I18N.vi[key] || key;
+      Object.keys(vars).forEach((k) => { s = s.replaceAll("{" + k + "}", vars[k]); });
+      return s;
+    };
+
+    function load(key, fallback) {
+      try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+      } catch { return fallback; }
+    }
+    function save(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
+    function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+    function escapeHtml(str) {
+      return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+    }
+    function todayISO() { return new Date().toISOString().slice(0, 10); }
+    function isOverdue(task) { return !!(task.due && !task.done && task.due < todayISO()); }
+    function formatDateVN(iso) {
+      if (!iso) return "";
+      const [y, m, d] = iso.split("-");
+      return `${d}/${m}/${y}`;
+    }
+
+    /* Sparkles */
+    (function makeSparkles() {
+      const box = $("sparkles");
+      for (let i = 0; i < 36; i++) {
+        const s = document.createElement("i");
+        s.style.left = Math.random() * 100 + "%";
+        s.style.top = Math.random() * 100 + "%";
+        s.style.setProperty("--d", 3 + Math.random() * 5 + "s");
+        s.style.animationDelay = Math.random() * 5 + "s";
+        const size = 2 + Math.random() * 3;
+        s.style.width = size + "px";
+        s.style.height = size + "px";
+        box.appendChild(s);
+      }
+    })();
+
+    function applyI18n() {
+      document.documentElement.lang = lang === "ko" ? "ko" : lang === "en" ? "en" : "vi";
+      document.querySelectorAll("[data-i18n]").forEach((el) => {
+        el.textContent = t(el.getAttribute("data-i18n"));
+      });
+      document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+        el.placeholder = t(el.getAttribute("data-i18n-placeholder"));
+      });
+      document.querySelectorAll(".lang-bar button").forEach((b) => {
+        b.classList.toggle("active", b.dataset.lang === lang);
+      });
+      const now = new Date();
+      const wd = t("weekdays");
+      $("todayDate").textContent =
+        `${wd[now.getDay()]}, ${String(now.getDate()).padStart(2,"0")}/${String(now.getMonth()+1).padStart(2,"0")}/${now.getFullYear()}`;
+      const qs = I18N[lang].quotes;
+      $("quote").textContent = qs[Math.floor(Math.random() * qs.length)];
+      renderTodos();
+      renderNotes();
+      renderProgress();
+    }
+
+    document.querySelectorAll(".lang-bar button").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        lang = btn.dataset.lang;
+        localStorage.setItem(LANG_KEY, lang);
+        applyI18n();
+      });
+    });
+
+    function showToast(msg) {
+      const el = $("toast");
+      el.textContent = msg;
+      el.classList.add("show");
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => el.classList.remove("show"), 2300);
+    }
+
+    function confettiBurst() {
+      const emojis = ["♡","★","✧","✿","♥"];
+      for (let i = 0; i < 12; i++) {
+        const s = document.createElement("span");
+        s.className = "confetti";
+        s.textContent = emojis[i % emojis.length];
+        s.style.left = 40 + Math.random() * 20 + "vw";
+        s.style.top = 35 + Math.random() * 20 + "vh";
+        s.style.color = ["#f76a8c","#c89be8","#ff8fab","#b57ad8"][i % 4];
+        document.body.appendChild(s);
+        setTimeout(() => s.remove(), 1200);
+      }
+    }
+
+    document.querySelectorAll(".tabs button").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".tabs button").forEach((b) => b.classList.remove("active"));
+        document.querySelectorAll(".panel").forEach((p) => p.classList.remove("active"));
+        btn.classList.add("active");
+        $("panel-" + btn.dataset.tab).classList.add("active");
+        if (btn.dataset.tab === "progress") renderProgress();
+        if (btn.dataset.tab === "notes") renderNotes();
+      });
+    });
+
+    document.querySelectorAll(".filters button").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".filters button").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        filter = btn.dataset.filter;
+        renderTodos();
+      });
+    });
+
+    $("searchInput").addEventListener("input", (e) => {
+      search = e.target.value.trim().toLowerCase();
+      renderTodos();
+    });
+
+    $("dailyGoal").value = meta.dailyGoal || 3;
+    $("dueDate").value = todayISO();
+
+    function getFiltered() {
+      let list = todos.slice();
+      if (filter === "active") list = list.filter((x) => !x.done);
+      else if (filter === "done") list = list.filter((x) => x.done);
+      else if (filter === "important") list = list.filter((x) => x.important && !x.done);
+      else if (filter === "overdue") list = list.filter((x) => isOverdue(x));
+      if (search) {
+        list = list.filter((x) =>
+          x.text.toLowerCase().includes(search) ||
+          (x.note || "").toLowerCase().includes(search) ||
+          (x.category || "").toLowerCase().includes(search)
+        );
+      }
+      return list;
+    }
+
+    function updateStreakOnComplete() {
+      const today = todayISO();
+      if (meta.lastDoneDate === today) return;
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yISO = yesterday.toISOString().slice(0, 10);
+      meta.streak = meta.lastDoneDate === yISO ? (meta.streak || 0) + 1 : 1;
+      meta.lastDoneDate = today;
+      save(META_KEY, meta);
+    }
+
+    function renderImportantAlert() {
+      const important = todos.filter((x) => x.important && !x.done);
+      const box = $("importantAlert");
+      if (!important.length) {
+        box.className = "alert-box empty";
+        box.textContent = t("importantEmpty");
+        return;
+      }
+      box.className = "alert-box";
+      box.innerHTML = important.map((x) => `
+        <div class="alert-item">
+          <span class="alert-dot"></span>
+          <div>
+            <strong>${t("importantHi")}</strong> ${t("importantDont")}
+            <div>${escapeHtml(x.text)}</div>
+            ${x.due ? `<span class="badge due">${t("badgeDue")}: ${formatDateVN(x.due)}</span>` : ""}
+          </div>
+        </div>`).join("");
+    }
+
+    function renderTodos() {
+      const items = getFiltered();
+      renderImportantAlert();
+      renderProgress();
+      if (!items.length) {
+        $("todoList").innerHTML = `<li class="empty">${t("emptyTodos")}</li>`;
+        return;
+      }
+      $("todoList").innerHTML = items.map((x) => {
+        const overdue = isOverdue(x);
+        return `<li class="todo-item ${x.done ? "done" : ""} ${x.important ? "important" : ""} ${overdue ? "overdue" : ""}" data-id="${x.id}">
+          <input class="check" type="checkbox" ${x.done ? "checked" : ""} />
+          <div>
+            <div class="todo-text">${escapeHtml(x.text)}</div>
+            <div class="meta">
+              ${x.important ? `<span class="badge">${t("badgeImportant")}</span>` : ""}
+              <span class="badge cat">${escapeHtml(x.category || "Chung")}</span>
+              ${x.due ? `<span class="badge ${overdue ? "overdue" : "due"}">${overdue ? t("badgeOverdue") : t("badgeDue")}: ${formatDateVN(x.due)}</span>` : ""}
+            </div>
+            ${x.note ? `<div class="note-preview">✎ ${escapeHtml(x.note)}</div>` : ""}
+          </div>
+          <div class="actions">
+            <button type="button" class="icon-btn star-btn ${x.important ? "on" : ""}">♥</button>
+            <button type="button" class="icon-btn edit-btn">✎</button>
+            <button type="button" class="icon-btn del-btn">✕</button>
+          </div>
+        </li>`;
+      }).join("");
+    }
+
+    function renderProgress() {
+      const total = todos.length;
+      const done = todos.filter((x) => x.done).length;
+      const left = total - done;
+      const pct = total ? Math.round((done / total) * 100) : 0;
+      $("statTotal").textContent = total;
+      $("statDone").textContent = done;
+      $("statLeft").textContent = left;
+      $("statStreak").textContent = meta.streak || 0;
+      $("progressPct").textContent = pct;
+      const circumference = 2 * Math.PI * 46;
+      $("progressCircle").style.strokeDasharray = circumference;
+      $("progressCircle").style.strokeDashoffset = circumference * (1 - pct / 100);
+      $("barAll").style.width = pct + "%";
+      $("barAllLabel").textContent = `${done}/${total}`;
+      const impAll = todos.filter((x) => x.important);
+      const impDone = impAll.filter((x) => x.done).length;
+      const impPct = impAll.length ? Math.round((impDone / impAll.length) * 100) : 0;
+      $("barImp").style.width = impPct + "%";
+      $("barImpLabel").textContent = `${impDone}/${impAll.length}`;
+      const goal = meta.dailyGoal || 3;
+      $("goalStatus").textContent = done >= goal
+        ? t("goalReached", { n: goal })
+        : t("goalLeft", { n: goal - done, g: goal });
+
+      const cats = {};
+      todos.forEach((x) => {
+        const c = x.category || "Chung";
+        if (!cats[c]) cats[c] = { total: 0, done: 0 };
+        cats[c].total++;
+        if (x.done) cats[c].done++;
+      });
+      const keys = Object.keys(cats);
+      $("categoryStats").innerHTML = keys.length
+        ? keys.map((c) => {
+            const p = Math.round((cats[c].done / cats[c].total) * 100);
+            return `<div class="bar-block">
+              <div class="bar-top"><span>${escapeHtml(c)}</span><span>${cats[c].done}/${cats[c].total}</span></div>
+              <div class="bar"><i style="width:${p}%"></i></div>
+            </div>`;
+          }).join("")
+        : `<p class="empty">${t("noCatData")}</p>`;
+    }
+
+    $("todoForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const text = $("taskInput").value.trim();
+      if (!text) return;
+      todos.unshift({
+        id: uid(), text, done: false,
+        important: $("importantCheck").checked,
+        category: $("categorySelect").value,
+        due: $("dueDate").value || "",
+        note: $("taskNote").value.trim(),
+        createdAt: Date.now(),
+      });
+      save(KEY, todos);
+      $("taskInput").value = "";
+      $("taskNote").value = "";
+      $("importantCheck").checked = false;
+      renderTodos();
+      showToast(t("toastAdd"));
+      $("taskInput").focus();
+    });
+
+    $("todoList").addEventListener("click", (e) => {
+      const item = e.target.closest(".todo-item");
+      if (!item) return;
+      const id = item.dataset.id;
+      const todo = todos.find((x) => x.id === id);
+      if (!todo) return;
+
+      if (e.target.classList.contains("check")) {
+        todo.done = e.target.checked;
+        if (todo.done) { updateStreakOnComplete(); confettiBurst(); showToast(t("toastDone")); }
+        else showToast(t("toastUndone"));
+        save(KEY, todos); renderTodos(); return;
+      }
+      if (e.target.classList.contains("star-btn")) {
+        todo.important = !todo.important;
+        save(KEY, todos); renderTodos();
+        showToast(todo.important ? t("toastStarOn") : t("toastStarOff")); return;
+      }
+      if (e.target.classList.contains("del-btn")) {
+        todos = todos.filter((x) => x.id !== id);
+        save(KEY, todos); renderTodos(); showToast(t("toastDelete")); return;
+      }
+      if (e.target.classList.contains("edit-btn")) {
+        editingId = id;
+        $("editText").value = todo.text;
+        $("editCategory").value = todo.category || "Chung";
+        $("editDue").value = todo.due || "";
+        $("editNote").value = todo.note || "";
+        $("editImportant").checked = !!todo.important;
+        $("editModal").classList.add("show");
+      }
+    });
+
+    $("cancelEdit").addEventListener("click", () => {
+      $("editModal").classList.remove("show"); editingId = null;
+    });
+    $("editModal").addEventListener("click", (e) => {
+      if (e.target === $("editModal")) { $("editModal").classList.remove("show"); editingId = null; }
+    });
+    $("saveEdit").addEventListener("click", () => {
+      const todo = todos.find((x) => x.id === editingId);
+      if (!todo) return;
+      const text = $("editText").value.trim();
+      if (!text) return showToast(t("toastEmpty"));
+      todo.text = text;
+      todo.category = $("editCategory").value;
+      todo.due = $("editDue").value || "";
+      todo.note = $("editNote").value.trim();
+      todo.important = $("editImportant").checked;
+      save(KEY, todos);
+      $("editModal").classList.remove("show");
+      editingId = null;
+      renderTodos();
+      showToast(t("toastEdit"));
+    });
+
+    $("clearDone").addEventListener("click", () => {
+      const before = todos.length;
+      todos = todos.filter((x) => !x.done);
+      if (todos.length === before) return showToast(t("toastClearNone"));
+      save(KEY, todos); renderTodos(); showToast(t("toastCleared"));
+    });
+
+    $("saveGoal").addEventListener("click", () => {
+      const g = Math.max(1, Math.min(50, Number($("dailyGoal").value) || 3));
+      meta.dailyGoal = g; $("dailyGoal").value = g;
+      save(META_KEY, meta); renderProgress();
+      showToast(t("toastGoal", { n: g }));
+    });
+
+    $("exportBtn").addEventListener("click", () => {
+      const data = { todos, notes, meta, user: "Hoàng Thị Ngọc Ánh", exportedAt: new Date().toISOString() };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "kuromi-todo-ngoc-anh.json";
+      a.click();
+      URL.revokeObjectURL(a.href);
+      showToast(t("toastExport"));
+    });
+
+    function renderNotes() {
+      const grid = $("notesGrid");
+      if (!notes.length) {
+        grid.innerHTML = `<p class="empty" style="grid-column:1/-1">${t("emptyNotes")}</p>`;
+        return;
+      }
+      grid.innerHTML = notes.map((n) => `
+        <article class="note-card ${escapeHtml(n.color || "pink")}" data-id="${n.id}">
+          <button type="button" class="icon-btn del-note">✕</button>
+          <h3>${escapeHtml(n.title)}</h3>
+          <p>${escapeHtml(n.body)}</p>
+          <div class="note-date">${formatDateVN(n.date)}</div>
+        </article>`).join("");
+    }
+
+    $("noteForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const title = $("noteTitle").value.trim();
+      const body = $("noteBody").value.trim();
+      if (!title || !body) return;
+      notes.unshift({ id: uid(), title, body, color: $("noteColor").value, date: todayISO() });
+      save(NOTES_KEY, notes);
+      $("noteTitle").value = ""; $("noteBody").value = "";
+      renderNotes(); showToast(t("toastNote"));
+    });
+
+    $("notesGrid").addEventListener("click", (e) => {
+      if (!e.target.classList.contains("del-note")) return;
+      const card = e.target.closest(".note-card");
+      notes = notes.filter((n) => n.id !== card.dataset.id);
+      save(NOTES_KEY, notes); renderNotes(); showToast(t("toastNoteDel"));
+    });
+
+    window.addEventListener("load", () => {
+      const pending = todos.filter((x) => x.important && !x.done);
+      if (pending.length) {
+        setTimeout(() => showToast(t("toastRemind", { n: pending.length })), 700);
+      }
+    });
+
+    applyI18n();
+  </script>
+</body>
+</html>
